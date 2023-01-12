@@ -32,6 +32,9 @@ func (r *scanLogService) ScanFile(file *os.File) chan string {
 			result <- logRow
 
 		}
+		if scanner.Err() == io.EOF {
+			return
+		}
 	}()
 	return result
 }

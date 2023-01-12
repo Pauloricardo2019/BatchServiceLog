@@ -1,6 +1,9 @@
 package facade
 
-import "regexp"
+import (
+	"regexp"
+	"strings"
+)
 
 var regex *regexp.Regexp
 
@@ -37,14 +40,27 @@ func (l *logInfoFacade) ProcessingLogs() error {
 	regex = re
 
 	file, err := l.readLogService.ReadFile("logs")
-
+	if err != nil {
+		return err
+	}
 	defer file.Close()
 
-	//processar linha por linha
+	chanRow := l.scanLogService.ScanFile(file)
 
-	//range no channel
+	for logRow := range chanRow {
 
-	//processar regex
+		values, err := l.regexService.SeparateByGroups(logRow)
+		if err != nil {
+			return err
+		}
+
+		if !l.validationLogService.ValidateRow(*values) {
+			return err
+		}
+
+		strings.Split()
+
+	}
 
 	//validar grupos
 
