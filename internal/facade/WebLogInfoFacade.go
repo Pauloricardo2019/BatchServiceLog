@@ -2,7 +2,6 @@ package facade
 
 import (
 	"regexp"
-	"strings"
 )
 
 var regex *regexp.Regexp
@@ -57,8 +56,6 @@ func (l *logInfoFacade) ProcessingLogs() error {
 		if !l.validationLogService.ValidateRow(*values) {
 			return err
 		}
-
-		strings.Split()
 
 	}
 
