@@ -14,8 +14,13 @@ const (
 var regex *regexp.Regexp
 
 func main() {
-
-	table := &Table{}
+ fmt.Println("Chamar os construtores aqui")
+	//cfg
+ //db connect
+ //repository
+ //service
+ //facade
+ table := &Table{}
 	tables := []Table{}
 	//Compila a regex criada na const pattern
 
