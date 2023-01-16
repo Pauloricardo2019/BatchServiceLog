@@ -5,10 +5,6 @@ import (
 	"context"
 )
 
-type logInfoRepository interface {
-	InsertRecords(ctx context.Context, logs []model.Log) error
-}
-
 type logInfoService struct {
 	logInfoRepository logInfoRepository
 }
@@ -19,6 +15,6 @@ func NewLogInfoService(logInfoRepository logInfoRepository) *logInfoService {
 	}
 }
 
-func (l *logInfoService) InsertLogInfo(ctx context.Context, logs []model.Log) error {
-	return l.logInfoRepository.InsertRecords(ctx, logs)
+func (l *logInfoService) InsertLogInfo(ctx context.Context, log *model.Log) error {
+	return l.logInfoRepository.InsertRecords(ctx, log)
 }
