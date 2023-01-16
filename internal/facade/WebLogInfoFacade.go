@@ -1,6 +1,8 @@
 package facade
 
 import (
+	"context"
+	"fmt"
 	"regexp"
 )
 
@@ -16,6 +18,7 @@ type logInfoFacade struct {
 	regexService         regexService
 	scanLogService       scanLogService
 	validationLogService validationLogService
+	logProvider          logProvider
 }
 
 func NewLogInfoFacade(
@@ -24,6 +27,7 @@ func NewLogInfoFacade(
 	regexService regexService,
 	scanLogService scanLogService,
 	validationLogService validationLogService,
+	logProvider logProvider,
 ) *logInfoFacade {
 	return &logInfoFacade{
 		logInfoService:       logInfoService,
@@ -31,15 +35,19 @@ func NewLogInfoFacade(
 		regexService:         regexService,
 		scanLogService:       scanLogService,
 		validationLogService: validationLogService,
+		logProvider:          logProvider,
 	}
 }
 
 func (l *logInfoFacade) ProcessingLogs() error {
+	ctx := context.Background()
+	l.logProvider.LogInfo("Start processing")
 	re := regexp.MustCompile(pattern)
 	regex = re
 
 	file, err := l.readLogService.ReadFile("logs")
 	if err != nil {
+		l.logProvider.LogError("read file error: " + err.Error())
 		return err
 	}
 	defer file.Close()
@@ -47,22 +55,31 @@ func (l *logInfoFacade) ProcessingLogs() error {
 	chanRow := l.scanLogService.ScanFile(file)
 
 	for logRow := range chanRow {
-
-		values, err := l.regexService.SeparateByGroups(logRow)
+		l.logProvider.LogInfo("Start range on channel")
+		log, err := l.regexService.SeparateByGroups(regex, logRow)
 		if err != nil {
-			return err
+			l.logProvider.LogError("regex error: " + err.Error())
+			continue
 		}
 
-		if !l.validationLogService.ValidateRow(*values) {
-			return err
+		l.logProvider.LogInfo("passed by separate by groups")
+
+		l.logProvider.LogInfo(fmt.Sprintf("Log ip %s, date %s, verb %s.", log.IP, log.Date, log.Verb))
+
+		if !l.validationLogService.ValidateRow(log) {
+			l.logProvider.LogError("validate error: " + err.Error())
+			continue
 		}
 
+		l.logProvider.LogInfo("passed by validation")
+
+		err = l.logInfoService.InsertLogInfo(ctx, log)
+		if err != nil {
+			l.logProvider.LogError("insert database error: " + err.Error())
+			continue
+		}
+
+		l.logProvider.LogInfo("finish processing")
 	}
-
-	//validar grupos
-
-	//inteirar no array
-
-	//persistir na base
-
+	return nil
 }

@@ -1,16 +1,16 @@
 package repository
 
 import (
+	"batch-service/internal/service"
 	"context"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"gpsus_api/config"
 	"testing"
 )
 
 func TestBeginTransaction(t *testing.T) {
-	cfg := config.GetConfig()
+	cfg := service.NewGetConfig()
 	db, err := gorm.Open(postgres.Open(cfg.DbConnString))
 	if err != nil {
 		panic(err.Error())
@@ -24,7 +24,7 @@ func TestBeginTransaction(t *testing.T) {
 }
 
 func TestCommitTransactionOK(t *testing.T) {
-	cfg := config.GetConfig()
+	cfg := service.NewGetConfig()
 	db, err := gorm.Open(postgres.Open(cfg.DbConnString))
 	if err != nil {
 		panic(err.Error())
@@ -41,7 +41,7 @@ func TestCommitTransactionOK(t *testing.T) {
 }
 
 func TestCommitTransactionNoBeginTransaction(t *testing.T) {
-	cfg := config.GetConfig()
+	cfg := service.NewGetConfig()
 	db, err := gorm.Open(postgres.Open(cfg.DbConnString))
 	if err != nil {
 		panic(err.Error())

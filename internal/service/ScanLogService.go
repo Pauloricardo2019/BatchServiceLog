@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"io"
 	"os"
+	"time"
 )
 
 type scanLogService struct {
@@ -22,18 +23,16 @@ func (r *scanLogService) ScanFile(file *os.File) chan string {
 	result := make(chan string)
 
 	go func() {
+		time.Sleep(time.Second * 1)
 		for scanner.Scan() {
 
 			logRow := scanner.Text()
-			if scanner.Err() == io.EOF {
+			if logRow == "" || scanner.Err() == io.EOF {
+				close(result)
 				return
 			}
 
 			result <- logRow
-
-		}
-		if scanner.Err() == io.EOF {
-			return
 		}
 	}()
 	return result

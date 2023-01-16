@@ -4,10 +4,11 @@ import (
 	"batch-service/internal/model"
 	"context"
 	"os"
+	"regexp"
 )
 
 type logInfoService interface {
-	InsertLogInfo(ctx context.Context, logs []model.Log) error
+	InsertLogInfo(ctx context.Context, logs *model.Log) error
 }
 
 type readLogService interface {
@@ -15,7 +16,7 @@ type readLogService interface {
 }
 
 type regexService interface {
-	SeparateByGroups(logRow string) (*string, error)
+	SeparateByGroups(regex *regexp.Regexp, logRow string) (*model.Log, error)
 }
 
 type scanLogService interface {
@@ -23,5 +24,10 @@ type scanLogService interface {
 }
 
 type validationLogService interface {
-	ValidateRow(log string) bool
+	ValidateRow(log *model.Log) bool
+}
+
+type logProvider interface {
+	LogInfo(text string)
+	LogError(text string)
 }

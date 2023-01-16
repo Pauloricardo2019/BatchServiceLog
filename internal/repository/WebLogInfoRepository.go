@@ -3,6 +3,7 @@ package repository
 import (
 	"batch-service/internal/model"
 	"context"
+	"fmt"
 	"gorm.io/gorm"
 )
 
@@ -17,10 +18,13 @@ func NewLogInfo(db *gorm.DB) *logInfoRepository {
 	}
 }
 
-func (l *logInfoRepository) InsertRecords(ctx context.Context, logs []model.Log) error {
+func (l *logInfoRepository) InsertRecords(ctx context.Context, log *model.Log) error {
 	db, err := l.GetConnection(ctx)
 	if err != nil {
 		return err
 	}
 
+	query := fmt.Sprintf("INSERT INTO logs (ip, date, verb) VALUES ('%s', '%s', '%s'); ", log.IP, log.Date, log.Verb)
+
+	return db.Exec(query).Error
 }
