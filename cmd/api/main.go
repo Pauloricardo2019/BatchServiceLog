@@ -40,5 +40,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Finisi!")
+	fmt.Printf("Finish !")
+
 }
