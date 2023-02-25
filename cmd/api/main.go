@@ -12,6 +12,7 @@ import (
 )
 
 func main() {
+    //start
 	cfg := service.NewGetConfig()
 	db, err := gorm.Open(postgres.Open(cfg.DbConnString), &gorm.Config{
 		SkipDefaultTransaction: true,
